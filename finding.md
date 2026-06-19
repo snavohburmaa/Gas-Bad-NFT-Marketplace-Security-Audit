@@ -400,15 +400,3 @@ The README explicitly acknowledges:
 Compiling with solc 0.8.20 defaults to the Shanghai EVM, emitting `PUSH0`. The README
 targets Ethereum mainnet (which supports it), so this is informational. If the contracts
 are ever ported to a chain without PUSH0, set `evm_version` explicitly.
-
-### [I-3] Static-analysis false positive: "state change without event" on assembly emitters
-
-**Location:** `src/GasBadNftMarketplace.sol` — `listItem:38`, `cancelListing:73`, `buyItem:104`, `updateListing:146` (events emitted via `log4` at lines 48-60, 82-92, 121-132, 158-169 respectively)
-
-Aderyn reports L-2 *"State Change Without Event"* against `listItem`, `cancelListing`,
-`buyItem`, and `updateListing` in `GasBadNftMarketplace.sol`. **This is a false positive.**
-Those functions do emit events via raw `log4` in inline assembly, which AST-based
-tools cannot see. Only `withdrawProceeds` genuinely lacks an event.
-This is a useful reminder that automated tools under report on hand rolled assembly, and
-why the topics had to be verified manually.
-
